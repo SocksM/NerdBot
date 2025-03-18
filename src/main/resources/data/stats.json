@@ -173,6 +173,42 @@
         "parseType": "NORMAL"
     },
     {
+        "icon": "⛃",
+        "name": "treasure_chance",
+        "stat": "Treasure Chance",
+        "display": "⛃ Treasure Chance",
+        "color": "GOLD",
+        "subColor": null,
+        "parseType": "NORMAL"
+    },
+    {
+        "icon": "ථ",
+        "name": "hook",
+        "stat": "Hook",
+        "display": "ථ Hook",
+        "color": "BLUE",
+        "subColor": null,
+        "parseType": "NORMAL"
+    },
+    {
+        "icon": "ꨃ",
+        "name": "line",
+        "stat": "Line",
+        "display": "ꨃ Line",
+        "color": "BLUE",
+        "subColor": null,
+        "parseType": "NORMAL"
+    },
+    {
+        "icon": "࿉",
+        "name": "sinker",
+        "stat": "sinker",
+        "display": "࿉ Sinker",
+        "color": "BLUE",
+        "subColor": null,
+        "parseType": "NORMAL"
+    },
+    {
         "icon": "๑",
         "name": "ability_damage",
         "stat": "Ability Damage",
