@@ -39,7 +39,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: socks_mF/nerd-bot:latest
+  IMAGE_NAME: ${{ github.actor }}/nerd-bot:latest
   REPO_NAME: ${{ github.event.repository.name }}
   REPO_USERNAME: ${{ github.event.repository.owner.login }}
   REPO_BRANCH: ${{ github.ref_name }}
@@ -65,7 +65,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-
+          dsfaljslf
           docker build . --tag ${{ env.REGISTRY }}/$IMAGE_NAME_LOWER \
             --build-arg GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME }} \
             --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
