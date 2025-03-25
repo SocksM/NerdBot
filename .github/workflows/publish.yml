@@ -67,7 +67,7 @@ jobs:
             --build-arg GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME }} \
             --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             --build-arg REPO_USERNAME=${{ env.REPO_USERNAME }} \
-            --build-arg REPO_NAME=${{ REPO_NAME }} \
+            --build-arg REPO_NAME=${{ env.REPO_NAME }} \
             --build-arg REPO_BRANCH=${{ env.REPO_BRANCH }}
 
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
