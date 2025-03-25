@@ -39,7 +39,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.actor }} | tr '[:upper:]' '[:lower:]'}/nerd-bot:latest
+  IMAGE_NAME: socks_m/nerd-bot:latest
   REPO_NAME: ${{ github.event.repository.name }}
   REPO_USERNAME: ${{ github.event.repository.owner.login }}
   REPO_BRANCH: ${{ github.ref_name }}
