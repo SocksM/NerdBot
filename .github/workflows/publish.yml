@@ -49,37 +49,12 @@ env:
   REPO_USERNAME: ${{ github.event.repository.owner.login }}
   REPO_BRANCH: ${{ github.ref_name }}
   ENVIRONMENT_NAME: ${{ github.event.inputs.botEnvironmentType || 'PRODUCTION' }}
-  ENVIRONMENT_NAME_LOWER: '' # Will be set in the sanitize job
   PORT: ${{ github.event.inputs.port || '1234' }} # Default port is 1234 but should probably be changed to 8080 (convention)
-  NAME_BOT_TOKEN_SECRET: 'BOT_TOKEN_${{ github.event.inputs.botEnvironmentType }}_${{ github.ref_name }}'
+  NAME_BOT_TOKEN_SECRET: 'BOT_TOKEN_${{ github.event.inputs.botEnvironmentType || 'PRODUCTION' }}_${{ github.ref_name }}'
 
 jobs:
-  sanitize:
-    name: Sanitize inputs
-    if: ${{ github.event_name == 'workflow_dispatch' || github.ref_name == github.event.repository.default_branch }} # Haven't tried, but I don't think you can specify this in the 'on:' block
-    runs-on: ubuntu-latest
-
-    outputs:
-      image_name: ${{ steps.sanitize-steps.outputs.image_name }}
-      container_name: ${{ steps.sanitize-steps.outputs.container_name }}
-      repo_name: ${{ steps.sanitize-steps.outputs.repo_name }}
-      environment_name_lower: ${{ steps.sanitize-steps.outputs.environment_name_lower }}
-
-    steps:
-      - id: sanitize-steps
-        run: |
-          echo "image_name=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "container_name=$(echo "${{ env.CONTAINER_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "repo_name=$(echo "${{ env.REPO_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "environment_name_lower=$(echo "${{ github.event.inputs.botEnvironmentType }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-          echo "::set-output name=image_name::$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')"
-          echo "::set-output name=container_name::$(echo "${{ env.CONTAINER_NAME }}" | tr '[:upper:]' '[:lower:]')"
-          echo "::set-output name=repo_name::$(echo "${{ env.REPO_NAME }}" | tr '[:upper:]' '[:lower:]')"
-          echo "::set-output name=environment_name_lower::$(echo "${{ github.event.inputs.botEnvironmentType }}" | tr '[:upper:]' '[:lower:]')"
-
   publish:
-    needs: sanitize
+    if: ${{ github.event_name == 'workflow_dispatch' || github.ref_name == github.event.repository.default_branch }} # Haven't tried, but I don't think you can specify this in the 'on:' block
     name: Publish image
     runs-on: ubuntu-latest
 
@@ -91,19 +66,15 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
       - name: Build and push Docker image
-        env:
-          IMAGE_NAME: ${{ needs.sanitize.outputs.image_name }}
-          CONTAINER_NAME: ${{ needs.sanitize.outputs.container_name }}
-          REPO_NAME: ${{ needs.sanitize.outputs.repo_name }}
         run: |
-          docker build . --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+          docker build . --tag ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')} \
             --build-arg GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME }} \
             --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             --build-arg REPO_USERNAME=${{ env.REPO_USERNAME }} \
             --build-arg REPO_NAME=${{ env.REPO_NAME }} \
             --build-arg REPO_BRANCH=${{ env.REPO_BRANCH }}
 
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          docker push ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
 
   deploy:
     needs: publish
@@ -118,10 +89,6 @@ jobs:
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
       - name: Deploy
-        env:
-          IMAGE_NAME: ${{ needs.sanitize.outputs.image_name }}
-          CONTAINER_NAME: ${{ needs.sanitize.outputs.container_name }}
-          ENVIRONMENT_NAME_LOWER: ${{ needs.sanitize.outputs.environment_name_lower }}
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd ${{ secrets.WORK_DIR }}
