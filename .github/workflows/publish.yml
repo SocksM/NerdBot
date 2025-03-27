@@ -64,6 +64,7 @@ jobs:
         run: |
           echo "IMAGE_NAME=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           echo "CONTAINER_NAME=$(echo "${{ env.CONTAINER_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "REPO_NAME=$(echo "${{ env.REPO_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Create ENVIRONMENT_NAME_LOWER
         run: |
