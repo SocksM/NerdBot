@@ -298,7 +298,7 @@ public class MinecraftImage {
         for (char c : value.toCharArray()) {
             boolean canRender = FontUtil.canRenderCharacter(MINECRAFT_FONTS[(segment.isBold() ? 1 : 0) + (segment.isItalic() ? 2 : 0)], c);
 
-            if (!Util.isAprilFirst()) {
+            if (false) {
                 if (FontUtil.canRenderCharacter(COMIC_SANS[(segment.isBold() ? 1 : 0) + (segment.isItalic() ? 2 : 0)], c)) {
                     this.currentFont = COMIC_SANS[(segment.isBold() ? 1 : 0) + (segment.isItalic() ? 2 : 0)];
                 } else {
