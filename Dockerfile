@@ -1,27 +1,25 @@
-# Use an official Maven image to build the application
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# Use OpenJDK 18 as the base image
+FROM openjdk:18-jdk-slim AS builder
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the project files
-COPY pom.xml .
-COPY src ./src
+# Copy the local project to the container
+COPY . .
 
-# Build the application
-RUN mvn clean package -DskipTests
+# Build the application using Maven
+RUN apt-get update  \
+    && apt-get install -y maven \
+    && mvn clean install -U -f pom.xml
 
-# Use a smaller JDK runtime for the final image
-FROM eclipse-temurin:17-jdk-alpine
+# Create a new image to run the application
+FROM builder AS runner
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the built JAR file from the build stage
-COPY --from=build /app/target/*.jar NerdBot.jar
+# Copy the built JAR file from the builder image
+COPY --from=builder /app/target/NerdBot.jar .
 
-# Expose the application port (change as needed)
-EXPOSE 8080
-
-# Allow passing runtime arguments
-ENTRYPOINT ["java", "-jar", "NerdBot.jar"]
+# Run the application
+ENTRYPOINT exec java ${JAVA_OPTS} -jar NerdBot.jar
