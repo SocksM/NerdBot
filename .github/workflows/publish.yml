@@ -75,7 +75,7 @@ jobs:
       - name: Build and push Docker image
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
         run: |
-          docker build . --tag ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]') \
+          docker build . --tag ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker push ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
 
   deploy:
