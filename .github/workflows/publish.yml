@@ -68,10 +68,6 @@ jobs:
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
         uses: actions/checkout@v4.2.2
 
-      - name: Ensure Maven repository exists
-        if: ${{ env.USE_OLD_IMAGE == 'false' }}
-        run: mkdir -p ~/.m2/repository
-
       - name: Cache Maven dependencies
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
         uses: actions/cache@v3
