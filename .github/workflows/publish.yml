@@ -68,13 +68,6 @@ jobs:
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
         uses: actions/checkout@v4.2.2
 
-      - name: Cache Maven dependencies
-        if: ${{ env.USE_OLD_IMAGE == 'false' }}
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
       - name: Login to GHCR
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
