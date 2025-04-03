@@ -56,21 +56,24 @@ env:
   ENVIRONMENT_NAME: ${{ github.event.inputs.botEnvironmentType || 'PRODUCTION' }}
   PORT: ${{ github.event.inputs.port || '1234' }} # Default port is 1234 but should probably be changed to 8080 (convention)
   NAME_BOT_TOKEN_SECRET: BOT_TOKEN_${{ github.event.inputs.botEnvironmentType || 'PRODUCTION' }}_${{ github.ref_name }}
+  USE_OLD_IMAGE: ${{ github.event.inputs.useOldImage || 'false' }}
 
 jobs:
   publish:
     name: Publish image
-    if: ${{ github.event.inputs.useOldImage || 'false' }} == 'false'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
+        if: ${{ env.USE_OLD_IMAGE == 'false' }}
         uses: actions/checkout@v4.2.2
 
       - name: Login to GHCR
+        if: ${{ env.USE_OLD_IMAGE == 'false' }}
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
       - name: Build and push Docker image
+        if: ${{ env.USE_OLD_IMAGE == 'false' }}
         run: |
           docker build . --tag ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker push ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
