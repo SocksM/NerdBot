@@ -68,16 +68,13 @@ jobs:
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
         uses: actions/checkout@v4.2.2
 
-      - name: Ensure Maven repository exists
-        if: ${{ env.USE_OLD_IMAGE == 'false' }}
-        run: mkdir -p ~/.m2/repository
-
       - name: Cache Maven dependencies
-        if: ${{ env.USE_OLD_IMAGE == 'false' }}
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-
 
       - name: Login to GHCR
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
@@ -86,7 +83,7 @@ jobs:
       - name: Build and push Docker image
         if: ${{ env.USE_OLD_IMAGE == 'false' }}
         run: |
-          docker build . --tag ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          docker build --build-arg MAVEN_CACHE_DIR=/root/.m2/repository . --tag ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker push ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
 
   deploy:
