@@ -48,6 +48,7 @@ on:
     branches:
       - 'master'
       - 'generator'
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.actor }}/nerd-bot-${{ github.event.inputs.botEnvironmentType || 'PRODUCTION' }}-${{ github.ref_name }}:latest
@@ -59,7 +60,7 @@ env:
 jobs:
   publish:
     name: Publish image
-    if: ${{ github.event.inputs.useOldImage || false }} == false
+    if: ${{ github.event.inputs.useOldImage || 'false' }} == 'false'
     runs-on: ubuntu-latest
 
     steps:
