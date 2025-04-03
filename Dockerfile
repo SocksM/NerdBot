@@ -1,26 +1,25 @@
-# Use OpenJDK 18 as the base image
-FROM openjdk:18-jdk-slim AS builder
+# Use Eclipse Temurin with Maven as the builder image
+FROM maven:3-eclipse-temurin-17-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the local project to the container
+# Copy the project files
 COPY pom.xml .
 COPY src ./src
 
-# Build the application using Maven
-RUN apt-get update  \
-    && apt-get install -y maven \
-    && mvn clean install -U -f pom.xml
+# Clean Maven cache and build the project with Maven
+RUN mvn clean install -U -f pom.xml \
+    && rm -f /app/target/original-*.jar
 
-# Create a new image to run the application
-FROM builder AS runner
+# Use a minimal eclipse-temurin image for running the bot
+FROM eclipse-temurin:24-jdk-alpine
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the built JAR file from the builder image
-COPY --from=builder /app/target/NerdBot.jar .
+# Copy the built JAR file from the builder stage
+COPY --from=builder /app/target/*.jar /app/
 
 # Run the application
-ENTRYPOINT exec java ${JAVA_OPTS} -jar NerdBot.jar
+ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -jar NerdBot.jar"]
