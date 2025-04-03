@@ -60,7 +60,6 @@ env:
 jobs:
   publish:
     name: Publish image
-    if: ${{ env.USE_OLD_IMAGE == 'false' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -71,6 +70,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
       - name: Build and push Docker image
+        if: ${{ env.USE_OLD_IMAGE == 'false' }}
         run: |
           docker build . --tag ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
           docker push ${{ env.REGISTRY }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
