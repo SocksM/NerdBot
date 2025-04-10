@@ -5,14 +5,16 @@ import com.google.gson.GsonBuilder;
 import com.mongodb.MongoException;
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
-import net.hypixel.nerdbot.api.badge.Badge;
-import net.hypixel.nerdbot.api.bot.Bot;
+import net.hypixel.nerdbot.internalapi.badge.Badge;
+import net.hypixel.nerdbot.internalapi.bot.Bot;
 import net.hypixel.nerdbot.bot.NerdBot;
 import net.hypixel.nerdbot.util.Util;
 import net.hypixel.nerdbot.util.json.adapter.BadgeTypeAdapter;
 import net.hypixel.nerdbot.util.json.adapter.ColorTypeAdapter;
 import net.hypixel.nerdbot.util.json.adapter.InstantTypeAdapter;
 import net.hypixel.nerdbot.util.json.adapter.UUIDTypeAdapter;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import sun.misc.Signal;
 
 import javax.security.auth.login.LoginException;
@@ -25,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Log4j2
+@SpringBootApplication
 public class NerdBotApp {
 
     public static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
@@ -49,13 +52,12 @@ public class NerdBotApp {
             });
         }
 
-        NerdBot nerdBot = new NerdBot();
-        bot = nerdBot;
+        bot = new NerdBot();
 
         log.info("Starting bot...");
 
         try {
-            nerdBot.create(args);
+            bot.create(args);
         } catch (LoginException | InvalidTokenException exception) {
             log.error("Failed to log into the bot with the given credentials!");
             System.exit(-1);
@@ -67,6 +69,17 @@ public class NerdBotApp {
         }
 
         log.info("Bot created!");
+
+        log.info("Starting Webserver...");
+
+        try {
+            SpringApplication.run(NerdBotApp.class, args);
+        } catch (Exception exception) {
+            log.error("Failed to start webserver!", exception);
+            System.exit(-1);
+        }
+
+        log.info("Webserver started!");
     }
 
     public static Optional<UUID> getHypixelAPIKey() {
