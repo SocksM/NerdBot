@@ -55,7 +55,8 @@
         "discordChannelId": "1234567890123456789",
         "emojiIds": [
           "1234567890123456789"
-        ]
+        ],
+        "thread": true
       }
     ],
     "blacklistedChannels": [
